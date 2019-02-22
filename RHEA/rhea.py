@@ -1,10 +1,13 @@
 import numpy as np
-
+import logging
 
 class RollingHorizonEvolutionaryAlgorithm():
 
     def __init__(self, rollout_actions_length, environment, mutation_probability, num_evals, use_shift_buffer=True,
                  flip_at_least_one=True, discount_factor=None, ignore_frames=0):
+
+        self._logger = logging.getLogger('RHEA')
+
         self._rollout_actions_length = rollout_actions_length
         self._environment = environment
         self._use_shift_buffer = use_shift_buffer
@@ -49,19 +52,17 @@ class RollingHorizonEvolutionaryAlgorithm():
 
         self._solution = solution
 
-        print(rollout_scores)
-
-        print('best score in evaluations: %d' % best_score_in_evaluations)
+        self._logger.info('Best score in evaluations: %.2f' % best_score_in_evaluations)
 
         # The next best action is the first action from the solution space
-        return self._solution[:1]
+        return self._solution[0]
 
     def _shift_and_append(self, solution):
         """
         Remove the first element and add a random action on the end
         """
         new_solution = np.copy(solution[1:])
-        new_solution = np.append(new_solution, self._environment.get_random_action())
+        new_solution = np.vstack([new_solution , self._environment.get_random_action()])
         return new_solution
 
     def _random_solution(self):
@@ -101,6 +102,7 @@ class RollingHorizonEvolutionaryAlgorithm():
             for _ in range(self._ignore_frames):
                 self._environment.perform_action(action)
 
-            score = self._environment.get_current_score()
-            lives = self._environment.get_current_lives()
-            print('score: %d, lives: %d' % (score, lives))
+
+        score = self._environment.get_current_score()
+        self._logger.info('Final score: %.2f' % (score))
+
