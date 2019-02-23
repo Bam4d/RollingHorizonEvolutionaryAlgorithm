@@ -45,3 +45,4 @@ rhea.run()
 
 If you want to cite this library, please use the following DOI
 
+[![DOI](https://zenodo.org/badge/172040305.svg)](https://zenodo.org/badge/latestdoi/172040305)
