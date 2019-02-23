@@ -9,7 +9,7 @@ An implementation of the [Rolling Horizon Evolutionary Algorithm](https://www.se
 ### using pip
 
 ```
-pip install rhea
+pip install RollingHorizonEA
 ```
 
 ## Usage
