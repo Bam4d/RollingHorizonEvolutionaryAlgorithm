@@ -1,6 +1,6 @@
 # Rolling Horizon Evolutionary Algorithm
 
-[![PyPI version](https://badge.fury.io/py/RHEA.svg)](https://badge.fury.io/py/RHEA)
+[![PyPI version](https://badge.fury.io/py/RollingHorizonEA.svg)](https://badge.fury.io/py/RollingHorizonEA)
 
 An implementation of the [Rolling Horizon Evolutionary Algorithm](https://www.semanticscholar.org/paper/Rolling-horizon-evolution-versus-tree-search-for-in-Liebana-Samothrakis/0cff838805be4b6366756a553daca0036778c1e0)
 

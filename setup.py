@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="RHEA",
-    version="0.0.1",
+    name="RollingHorizonEA",
+    version="0.0.2",
     author="Chris Bamford",
     author_email="chrisbam4d@gmail.com",
     description="Rolling Horizon Evolutionary Algorithm",
