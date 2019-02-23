@@ -14,22 +14,11 @@ pip install rhea
 
 ## Usage
 
-To use the NTBEA algorithm, you will need to define the following:
-
-#### Search Space
-The search space defines the potential parameters in their respective dimensions
-
-#### Evaluator
-The evaluator scores is used to score the combination of parameters for the optimiztion problem
-
-#### NTupleLandscape
-The NTuple landscape is the set of tuples which are used to choose combinations of parameters to test and score
-
-
+To use the rolling horizon evolutionary algorithm, you will need your game class to implement the `Environment` interface.
 
 ### Examples
 
-Examples of setting up the `Search Space`, `Evaluator` and `NTupleLandscape` can be found in the `examples` directory and run with:
+Examples of setting up any game environment can be found in the `examples` directory and run with:
 ```
 python run.py
 ```
@@ -37,23 +26,18 @@ python run.py
 #### m_max example
 
 ```
-max_dims = 6
-max_m = 4
+num_dims = 600
+m = 50
+num_evals = 50
+rollout_length = 10
+mutation_probability = 0.1
 
-# Set up the problem domain as one-max problem
-search_space = MMaxSearchSpace(max_dims, max_m)
-evaluator = MMaxEvaluator()
+# Set up the problem domain as m-max game
+environment = MMaxGame(num_dims, m)
 
-# 1-tuple, 2-tuple, 3-tuple and N-tuple
-tuple_landscape = NTupleLandscape(search_space, [1,2,max_dims])
+rhea = RollingHorizonEvolutionaryAlgorithm(rollout_length, environment, mutation_probability, num_evals)
 
-# Set the mutator type
-mutator = DefaultMutator(search_space, mutation_point_probability=0.5)
-
-evolutionary_algorithm = NTupleEvolutionaryAlgorithm(tuple_landscape, evaluator, search_space, mutator,
-                                                     k_explore=2.0, eval_neighbours=50)
-
-evolutionary_algorithm.run(5000)
+rhea.run()
 ```
 
 
@@ -61,4 +45,3 @@ evolutionary_algorithm.run(5000)
 
 If you want to cite this library, please use the following DOI
 
-[![DOI](https://zenodo.org/badge/158810748.svg)](https://zenodo.org/badge/latestdoi/158810748)
