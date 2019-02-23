@@ -1,8 +1,8 @@
 import logging
 import numpy as np
 
-from RHEA import RollingHorizonEvolutionaryAlgorithm
-from RHEA.environment import Environment
+from RollingHorizonEA import RollingHorizonEvolutionaryAlgorithm
+from RollingHorizonEA.environment import Environment
 
 class MMaxGame(Environment):
     '''
