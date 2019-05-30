@@ -21,17 +21,20 @@ class MMaxGame(Environment):
 
         self._goal_state = np.ones(self._num_dims) * m
 
-    def _score_state(self, state):
-        return -np.abs(self._goal_state - state).mean()
+    def _score_states(self, state):
+        return -np.abs(np.mean(self._goal_state - state, axis=1))
 
-    def evaluate_rollout(self, solution, discount_factor=0, ignore_frames=0):
+    def evaluate_rollout(self, solutions, discount_factor=0, ignore_frames=0):
 
-        copied_state = np.copy(self._game_state)
+        n_evals = solutions.shape[0]
 
-        for action in solution:
-            copied_state[action[0]] += action[1]
+        state_copies = np.repeat(np.expand_dims(self._game_state, 0), n_evals, axis=0)
 
-        return self._score_state(copied_state)
+        for state_copy, solution in zip(state_copies, solutions):
+            for action in solution:
+                state_copy[action[0]] += action[1]
+
+        return self._score_states(state_copies)
 
     def perform_action(self, action):
         self._game_state[action[0]] += action[1]
@@ -51,7 +54,7 @@ class MMaxGame(Environment):
         return np.all(self._goal_state==self._game_state)
 
     def get_current_score(self):
-        return self._score_state(self._game_state)
+        return self._score_states(self._game_state)
 
     def ignore_frame(self):
         return
@@ -63,7 +66,7 @@ if __name__ == "__main__":
     num_dims = 600
     m = 50
     num_evals = 50
-    rollout_length = 10
+    rollout_length = 100
     mutation_probability = 0.1
 
     # Set up the problem domain as one-max problem

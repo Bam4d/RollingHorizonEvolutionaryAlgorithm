@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="RollingHorizonEA",
-    version="0.0.2",
+    version="0.1.2",
     author="Chris Bamford",
     author_email="chrisbam4d@gmail.com",
     description="Rolling Horizon Evolutionary Algorithm",
