@@ -26,31 +26,20 @@ class RollingHorizonEvolutionaryAlgorithm():
         Get the next best action by evaluating a bunch of mutated solutions
         """
 
-        best_score_in_evaluations = float("-inf")
-
         if self._use_shift_buffer:
             solution = self._shift_and_append(self._solution)
         else:
             solution = self._random_solution()
 
-        rollout_scores = []
+        candidate_solutions = self._mutate(solution, self._mutation_probability)
 
-        for i in range(self._num_evals):
+        mutated_scores = self._environment.evaluate_rollout(candidate_solutions, self._discount_factor,
+                                                            self._ignore_frames)
+        best_idx = np.argmax(mutated_scores, axis=0)
 
-            # Keep the best solution from previous iterations
-            if i == 0:
-                mutated_solution = solution
-            else:
-                mutated_solution = self._mutate(solution, self._mutation_probability)
+        best_score_in_evaluations = mutated_scores[best_idx]
 
-            mutated_score = self._environment.evaluate_rollout(mutated_solution, self._discount_factor, self._ignore_frames)
-            if mutated_score > best_score_in_evaluations:
-                solution = mutated_solution
-                best_score_in_evaluations = mutated_score
-
-            rollout_scores.append(mutated_score)
-
-        self._solution = solution
+        self._solution = candidate_solutions[best_idx]
 
         self._logger.info('Best score in evaluations: %.2f' % best_score_in_evaluations)
 
@@ -76,22 +65,28 @@ class RollingHorizonEvolutionaryAlgorithm():
         Mutate the solution
         """
 
-        # Create a set of indexes in the solution that we are going to mutate
-        mutation_indexes = set()
-        solution_length = len(solution)
-        if self._flip_at_least_one:
-            mutation_indexes.add(np.random.randint(solution_length))
+        candidate_solutions = []
+        # Solution here is 2D of rollout_actions x batch_size
+        for b in range(self._num_evals):
+            # Create a set of indexes in the solution that we are going to mutate
+            mutation_indexes = set()
+            solution_length = len(solution)
+            if self._flip_at_least_one:
+                mutation_indexes.add(np.random.randint(solution_length))
 
-        mutation_indexes = mutation_indexes.union(set(np.where(np.random.random([solution_length]) < mutation_probability)[0]))
+            mutation_indexes = mutation_indexes.union(
+                set(np.where(np.random.random([solution_length]) < mutation_probability)[0]))
 
-        # Create the number of mutations that is the same as the number of mutation indexes
-        num_mutations = len(mutation_indexes)
-        mutations = [self._environment.get_random_action() for _ in range(num_mutations)]
+            # Create the number of mutations that is the same as the number of mutation indexes
+            num_mutations = len(mutation_indexes)
+            mutations = [self._environment.get_random_action() for _ in range(num_mutations)]
 
-        # Replace values in the solutions with mutated values
-        new_solution = np.copy(solution)
-        new_solution[list(mutation_indexes)] = mutations
-        return new_solution
+            # Replace values in the solutions with mutated values
+            new_solution = np.copy(solution)
+            new_solution[list(mutation_indexes)] = mutations
+            candidate_solutions.append(new_solution)
+
+        return np.stack(candidate_solutions)
 
     def run(self):
 
